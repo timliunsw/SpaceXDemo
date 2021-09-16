@@ -8,7 +8,7 @@ https://api.spacexdata.com/v3
 
 Dependencies
 The following dependencies are managed by Cocoapods.
-To run the code, go to the project folder in the terminal and run pod install, then open the WeatherApp.xcworkspace.
+To run the code, go to the project folder in the terminal and run pod install, then open the SpaceXDemo.xcworkspace.
 
 Rxswift
 RxCocoa
