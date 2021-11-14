@@ -13,7 +13,6 @@ class MainViewModel {
     var launches: BehaviorRelay<[Launch]> = BehaviorRelay(value: [])
     var launchesObservable: BehaviorRelay<[LaunchSection]> = BehaviorRelay(value: [])
     var filteredLaunches: BehaviorRelay<[LaunchSection]> = BehaviorRelay(value: [])
-    var sortedLaunches: [LaunchSection] = []
     private let bag = DisposeBag()
     
     init() {
@@ -38,10 +37,8 @@ extension MainViewModel {
                     sections.append(section)
                 })
                 
-                self.sortedLaunches = sections
                 self.launchesObservable.accept(sections)
-                
-                self.getFilteredLaunched(with: launches)
+                self.setFilteredLaunches(with: launches)
             })
             .disposed(by: bag)
     }
@@ -50,15 +47,15 @@ extension MainViewModel {
 // MARK: Handle data
 extension MainViewModel {
     func fetchLaunches(completion: (() -> Void)? = nil) {
-        APIService.shared.fetchLaunches() { [weak self] (success, data, _)  in
-            guard
-                let self = self,
-                let launches = data
-            else {
+        APIService.shared.fetchLaunches() { [weak self] result in
+            guard let self = self else {
+                completion?()
                 return
             }
             
-            self.launches.accept(launches)
+            if case .success(let data) = result {
+                self.launches.accept(data)
+            }
             completion?()
         }
     }
@@ -123,7 +120,7 @@ extension MainViewModel {
         fetchLaunches()
     }
     
-    func getFilteredLaunched(with launches: [Launch]) {
+    func setFilteredLaunches(with launches: [Launch]) {
         let successedLaunches = launches.filter { $0.launchSuccess }
         var sortedSections: [LaunchSection] = []
         successedLaunches.forEach({ launch in

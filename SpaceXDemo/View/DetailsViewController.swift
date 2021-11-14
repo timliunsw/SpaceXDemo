@@ -83,12 +83,10 @@ private extension DetailsViewController {
     // MARK: reactive
     func bindViews() {
         viewModel.launchText.asObservable()
-            .map({ $0 })
             .bind(to:self.launchLabel.rx.text)
             .disposed(by: bag)
         
         viewModel.rocketText.asObservable()
-            .map({ $0 })
             .bind(to:self.rocketLabel.rx.text)
             .disposed(by: bag)
     }

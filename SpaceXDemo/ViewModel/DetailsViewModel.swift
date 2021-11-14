@@ -28,19 +28,24 @@ class DetailsViewModel {
 // MARK: Handle data
 private extension DetailsViewModel {
     func fetchDetails() {
-        APIService.shared.fetchLaunch(withFlightNumber: flightNumber) { [weak self] (success, data, _)  in
-            guard let self = self, let launch = data else {
+        APIService.shared.fetchLaunch(withFlightNumber: flightNumber) { [weak self] launch in
+            guard let self = self else {
                 return
             }
             
-            let rocketId = launch.rocket.id
-            
-            APIService.shared.fetchRocket(withRocketId: rocketId) { [weak self] (success, data, _)  in
-                guard let self = self, let rocket = data else {
-                    return
+            if case .success(let launch) = launch {
+                let rocketId = launch.rocket.id
+                
+                APIService.shared.fetchRocket(withRocketId: rocketId) { [weak self] rocket  in
+                    guard let self = self else {
+                        return
+                    }
+                    
+                    if case .success(let rocket) = rocket {
+                        self.launch.accept(launch)
+                        self.rocket.accept(rocket)
+                    }
                 }
-                self.launch.accept(launch)
-                self.rocket.accept(rocket)
             }
         }
     }

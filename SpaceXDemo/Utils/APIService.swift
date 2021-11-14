@@ -7,12 +7,14 @@
 
 import Foundation
 
-typealias LaunchesDataTaskResult = (_ success: Bool, _ data: [Launch]?, _ error: Error?)->()
-typealias LaunchDataTaskResult = (_ success: Bool, _ data: Launch?, _ error: Error?)->()
-typealias RocketDataTaskResult = (_ success: Bool, _ data: Rocket?, _ error: Error?)->()
+typealias LaunchesDataTaskResult = (Result<[Launch], NetworkError>) -> Void
+typealias LaunchDataTaskResult = (Result<Launch, NetworkError>) -> Void
+typealias RocketDataTaskResult = (Result<Rocket, NetworkError>) -> Void
 
-enum APIServiceError: Error {
+enum NetworkError: Error {
     case invalidResponse(Data?, URLResponse?)
+    case badURL
+    case requestFailed
 }
 
 class APIService {
@@ -32,7 +34,7 @@ class APIService {
                 let httpResponse = response as? HTTPURLResponse,
                 200 ..< 300 ~= httpResponse.statusCode
             else {
-                completion(.failure(error ?? APIServiceError.invalidResponse(data, response)))
+                completion(.failure(error ?? NetworkError.invalidResponse(data, response)))
                 return
             }
             
@@ -60,13 +62,17 @@ class APIService {
             }
         }
     }
-    
+}
+
+// APIs
+extension APIService {
     func fetchLaunches(completion: @escaping LaunchesDataTaskResult) {
         guard
             let baseURL = URL(string: Constants.baseURL),
             let urlComponents = NSURLComponents(url: baseURL.appendingPathComponent(Constants.SpaceXEndpoints.launches), resolvingAgainstBaseURL: true),
             let url = urlComponents.url
         else {
+            completion(.failure(.badURL))
             return
         }
         
@@ -74,9 +80,9 @@ class APIService {
         performJSON(request, of: [Launch].self) { result in
             switch result {
                 case .success(let data):
-                    completion(true, data, nil)
-                case .failure(let error):
-                    completion(false, nil , error)
+                    completion(.success(data))
+                case .failure(_):
+                    completion(.failure(.requestFailed))
             }
         }
     }
@@ -87,6 +93,7 @@ class APIService {
             let urlComponents = NSURLComponents(url: baseURL.appendingPathComponent("\(Constants.SpaceXEndpoints.launches)\(number)"), resolvingAgainstBaseURL: true),
             let url = urlComponents.url
         else {
+            completion(.failure(.badURL))
             return
         }
         
@@ -94,9 +101,9 @@ class APIService {
         performJSON(request, of: Launch.self) { result in
             switch result {
                 case .success(let data):
-                    completion(true, data, nil)
-                case .failure(let error):
-                    completion(false, nil , error)
+                    completion(.success(data))
+                case .failure(_):
+                    completion(.failure(.requestFailed))
             }
         }
     }
@@ -107,6 +114,7 @@ class APIService {
             let urlComponents = NSURLComponents(url: baseURL.appendingPathComponent("\(Constants.SpaceXEndpoints.rockets)\(id)"), resolvingAgainstBaseURL: true),
             let url = urlComponents.url
         else {
+            completion(.failure(.badURL))
             return
         }
         
@@ -114,9 +122,9 @@ class APIService {
         performJSON(request, of: Rocket.self) { result in
             switch result {
                 case .success(let data):
-                    completion(true, data, nil)
-                case .failure(let error):
-                    completion(false, nil , error)
+                    completion(.success(data))
+                case .failure(_):
+                    completion(.failure(.requestFailed))
             }
         }
     }
