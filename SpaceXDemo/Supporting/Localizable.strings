@@ -19,3 +19,7 @@
 "Filter.Alert.Title" = "Filter launches";
 "Filter.Alert.Message" = "Please select an option";
 "Filter.Alert.Option.Success" = "By launch success";
+"System.Network.Error.Invalid" = "Invalid response";
+"System.Network.Error.BadUrl" = "The URL is not valid";
+"System.Network.Error.RequestFailed" = "Request failed";
+"System.Network.Error.Unknown" = "Unknown error";

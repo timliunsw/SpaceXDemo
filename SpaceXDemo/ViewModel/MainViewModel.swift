@@ -9,10 +9,25 @@ import Foundation
 import RxSwift
 import RxCocoa
 
-class MainViewModel {
+protocol MainViewModelProtocol {
+    var launches: BehaviorRelay<[Launch]> { get }
+    var launchesObservable: BehaviorRelay<[LaunchSection]> { get }
+    var filteredLaunches: BehaviorRelay<[LaunchSection]> { get }
+    var notifyError: BehaviorRelay<NetworkError?> { get }
+    
+    func fetchLaunches(completion: (() -> Void)?)
+    func launchesSortedByDate()
+    func launchesSortedByMissionName()
+    func launchesFilteredBySuccess()
+    func resetLaunches()
+}
+
+class MainViewModel: MainViewModelProtocol {
     var launches: BehaviorRelay<[Launch]> = BehaviorRelay(value: [])
     var launchesObservable: BehaviorRelay<[LaunchSection]> = BehaviorRelay(value: [])
     var filteredLaunches: BehaviorRelay<[LaunchSection]> = BehaviorRelay(value: [])
+    var notifyError: BehaviorRelay<NetworkError?> = BehaviorRelay(value: nil)
+    
     private let bag = DisposeBag()
     
     init() {
@@ -21,8 +36,8 @@ class MainViewModel {
     }
 }
 
-// MARK: Handle data
-extension MainViewModel {
+// MARK: Reactive
+private extension MainViewModel {
     func setupReactive() {
         launches.asObservable()
             .subscribe(onNext: { [weak self] launches in
@@ -53,9 +68,13 @@ extension MainViewModel {
                 return
             }
             
-            if case .success(let data) = result {
-                self.launches.accept(data)
+            switch result {
+                case .success(let data):
+                    self.launches.accept(data)
+                case .failure(let error):
+                    self.notifyError.accept(error)
             }
+            
             completion?()
         }
     }
@@ -120,7 +139,7 @@ extension MainViewModel {
         fetchLaunches()
     }
     
-    func setFilteredLaunches(with launches: [Launch]) {
+    private func setFilteredLaunches(with launches: [Launch]) {
         let successedLaunches = launches.filter { $0.launchSuccess }
         var sortedSections: [LaunchSection] = []
         successedLaunches.forEach({ launch in

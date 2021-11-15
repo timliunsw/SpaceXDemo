@@ -62,8 +62,8 @@ class DetailsViewController: UIViewController {
     }
 }
 
+// MARK: Layout
 private extension DetailsViewController {
-    // MARK: Layout
     func setupView() {
         navigationItem.title = "Nav.Title.Details".localized
         view.backgroundColor = #colorLiteral(red: 0.4666666687, green: 0.7647058964, blue: 0.2666666806, alpha: 1)
@@ -79,8 +79,10 @@ private extension DetailsViewController {
             detailsStackView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20),
         ])
     }
-    
-    // MARK: reactive
+}
+
+// MARK: Reactive
+private extension DetailsViewController {
     func bindViews() {
         viewModel.launchText.asObservable()
             .bind(to:self.launchLabel.rx.text)
@@ -88,6 +90,20 @@ private extension DetailsViewController {
         
         viewModel.rocketText.asObservable()
             .bind(to:self.rocketLabel.rx.text)
+            .disposed(by: bag)
+        
+        viewModel.notifyError
+            .asDriver()
+            .drive(onNext: { [weak self] error in
+                guard
+                    let self = self,
+                    let error = error
+                else {
+                    return
+                }
+                
+                self.showAlert(error.localizedDescription)
+            })
             .disposed(by: bag)
     }
 }

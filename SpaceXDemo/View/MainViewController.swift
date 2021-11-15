@@ -84,7 +84,7 @@ private extension MainViewController {
     }
 }
 
-// MARK: reactive
+// MARK: Reactive
 private extension MainViewController {
     func bindViews() {
         refreshControl.rx
@@ -107,7 +107,9 @@ private extension MainViewController {
                 let cell = tableView.dequeueReusableCell(withIdentifier: Constants.cellId)!
                 cell.selectionStyle = .none
                 cell.accessoryType = .detailButton
-                cell.textLabel?.text = "No.\(model.flightNumber), \(model.launchYear), \(model.missionName)"
+                cell.textLabel?.text = "No.\(model.flightNumber), \(model.missionName) (\(model.launchYear))"
+                cell.imageView?.image = UIImage(systemName: model.launchSuccess ? "checkmark.seal.fill" : "xmark.seal.fill")
+                cell.imageView?.tintColor = model.launchSuccess ? #colorLiteral(red: 0, green: 1, blue: 0.8470588235, alpha: 0.85) : #colorLiteral(red: 1, green: 0.2117647059, blue: 0, alpha: 0.8470588235)
                 return cell
             },
             titleForHeaderInSection: { dataSource, index in
@@ -150,7 +152,22 @@ private extension MainViewController {
                 else {
                     return
                 }
+                
                 self.present(SFSafariViewController(url: url), animated: true)
+            })
+            .disposed(by: bag)
+        
+        viewModel.notifyError
+            .asDriver()
+            .drive(onNext: { [weak self] error in
+                guard
+                    let self = self,
+                    let error = error
+                else {
+                    return
+                }
+                
+                self.showAlert(error.localizedDescription)
             })
             .disposed(by: bag)
     }

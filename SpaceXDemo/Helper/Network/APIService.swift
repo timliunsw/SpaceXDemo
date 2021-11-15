@@ -11,18 +11,18 @@ typealias LaunchesDataTaskResult = (Result<[Launch], NetworkError>) -> Void
 typealias LaunchDataTaskResult = (Result<Launch, NetworkError>) -> Void
 typealias RocketDataTaskResult = (Result<Rocket, NetworkError>) -> Void
 
-enum NetworkError: Error {
-    case invalidResponse(Data?, URLResponse?)
-    case badURL
-    case requestFailed
+protocol APIServiceProtocol {
+    func fetchLaunches(completion: @escaping LaunchesDataTaskResult)
+    func fetchLaunch(withFlightNumber number: Int, completion: @escaping LaunchDataTaskResult)
+    func fetchRocket(withRocketId id: String, completion: @escaping RocketDataTaskResult)
 }
 
-class APIService {
+struct APIService {
     static let shared = APIService()
     private var session: URLSession
     
-    private init() {
-        session = .shared
+    private init(session: URLSession = .shared) {
+        self.session = session
     }
     
     @discardableResult
@@ -64,8 +64,8 @@ class APIService {
     }
 }
 
-// APIs
-extension APIService {
+// MARK: APIServiceProtocol
+extension APIService: APIServiceProtocol {
     func fetchLaunches(completion: @escaping LaunchesDataTaskResult) {
         guard
             let baseURL = URL(string: Constants.baseURL),
