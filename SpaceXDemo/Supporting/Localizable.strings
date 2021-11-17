@@ -22,4 +22,3 @@
 "System.Network.Error.Invalid" = "Invalid response";
 "System.Network.Error.BadUrl" = "The URL is not valid";
 "System.Network.Error.RequestFailed" = "Request failed";
-"System.Network.Error.Unknown" = "Unknown error";

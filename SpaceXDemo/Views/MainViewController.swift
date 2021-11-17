@@ -27,7 +27,7 @@ extension LaunchSection: SectionModelType {
 class MainViewController: UIViewController {
     typealias DataSource = RxTableViewSectionedReloadDataSource<LaunchSection>
     
-    private let tableView: UITableView = {
+    let tableView: UITableView = {
         let tableView = UITableView()
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: Constants.cellId)
@@ -44,7 +44,7 @@ class MainViewController: UIViewController {
     }()
     
     private let bag = DisposeBag()
-    private var viewModel: MainViewModel!
+    var viewModel: MainViewModel!
     
     static func newInstance() -> MainViewController {
         let vc = MainViewController()

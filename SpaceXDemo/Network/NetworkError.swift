@@ -11,7 +11,6 @@ enum NetworkError: Error {
     case invalidResponse(Data?, URLResponse?)
     case badURL
     case requestFailed
-    case unknown
 }
 
 extension NetworkError {
@@ -23,8 +22,6 @@ extension NetworkError {
             return "System.Network.Error.BadUrl".localized
         case .requestFailed:
             return "System.Network.Error.RequestFailed".localized
-        case .unknown:
-            return "System.Network.Error.Unknown".localized
         }
     }
 }

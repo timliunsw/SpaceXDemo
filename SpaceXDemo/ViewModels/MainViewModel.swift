@@ -27,10 +27,12 @@ class MainViewModel: MainViewModelProtocol {
     var launchesObservable: BehaviorRelay<[LaunchSection]> = BehaviorRelay(value: [])
     var filteredLaunches: BehaviorRelay<[LaunchSection]> = BehaviorRelay(value: [])
     var notifyError: BehaviorRelay<NetworkError?> = BehaviorRelay(value: nil)
-    
+    var apiService: APIServiceProtocol!
     private let bag = DisposeBag()
     
-    init() {
+    init(apiService: APIServiceProtocol = APIService.shared) {
+        self.apiService = apiService
+        
         setupReactive()
         fetchLaunches()
     }
@@ -62,7 +64,7 @@ private extension MainViewModel {
 // MARK: Handle data
 extension MainViewModel {
     func fetchLaunches(completion: (() -> Void)? = nil) {
-        APIService.shared.fetchLaunches() { [weak self] result in
+        apiService.fetchLaunches() { [weak self] result in
             guard let self = self else {
                 completion?()
                 return

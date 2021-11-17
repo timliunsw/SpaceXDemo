@@ -26,6 +26,17 @@ class Launch: BaseModel {
         case links, details, rocket
     }
     
+    init(flightNumber: Int, missionName: String, launchYear: String, launchDate: Int, launchSuccess: Bool, links: Link, details: String, rocket: Rocket) {
+        self.flightNumber = flightNumber
+        self.missionName = missionName
+        self.launchYear = launchYear
+        self.launchDate = launchDate
+        self.launchSuccess = launchSuccess
+        self.links = links
+        self.details = details
+        self.rocket = rocket
+    }
+    
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         
@@ -40,5 +51,9 @@ class Launch: BaseModel {
     }
     
     func encode(to encoder: Encoder) throws { }
+    
+    static func == (lhs: Launch, rhs: Launch) -> Bool {
+        return lhs.flightNumber == rhs.flightNumber
+    }
 }
 

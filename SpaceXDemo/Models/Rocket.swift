@@ -22,6 +22,15 @@ class Rocket: BaseModel {
         case description, country, company
     }
     
+    init(id: String, name: String, type: String, description: String?, country: String?, company: String?) {
+        self.id = id
+        self.name = name
+        self.type = type
+        self.description = description
+        self.country = country
+        self.company = company
+    }
+    
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         
@@ -34,4 +43,8 @@ class Rocket: BaseModel {
     }
     
     func encode(to encoder: Encoder) throws { }
+    
+    static func == (lhs: Rocket, rhs: Rocket) -> Bool {
+        return lhs.id == rhs.id
+    }
 }

@@ -20,9 +20,11 @@ protocol APIServiceProtocol {
 struct APIService {
     static let shared = APIService()
     private var session: URLSession
+    let baseUrlString: String
     
-    private init(session: URLSession = .shared) {
+    init(session: URLSession = .shared, baseUrl: String = Constants.baseURL) {
         self.session = session
+        self.baseUrlString = baseUrl
     }
     
     @discardableResult
@@ -68,7 +70,7 @@ struct APIService {
 extension APIService: APIServiceProtocol {
     func fetchLaunches(completion: @escaping LaunchesDataTaskResult) {
         guard
-            let baseURL = URL(string: Constants.baseURL),
+            let baseURL = URL(string: baseUrlString),
             let urlComponents = NSURLComponents(url: baseURL.appendingPathComponent(Constants.SpaceXEndpoints.launches), resolvingAgainstBaseURL: true),
             let url = urlComponents.url
         else {
@@ -89,7 +91,7 @@ extension APIService: APIServiceProtocol {
     
     func fetchLaunch(withFlightNumber number: Int, completion: @escaping LaunchDataTaskResult) {
         guard
-            let baseURL = URL(string: Constants.baseURL),
+            let baseURL = URL(string: baseUrlString),
             let urlComponents = NSURLComponents(url: baseURL.appendingPathComponent("\(Constants.SpaceXEndpoints.launches)\(number)"), resolvingAgainstBaseURL: true),
             let url = urlComponents.url
         else {
@@ -110,7 +112,7 @@ extension APIService: APIServiceProtocol {
 
     func fetchRocket(withRocketId id: String, completion: @escaping RocketDataTaskResult) {
         guard
-            let baseURL = URL(string: Constants.baseURL),
+            let baseURL = URL(string: baseUrlString),
             let urlComponents = NSURLComponents(url: baseURL.appendingPathComponent("\(Constants.SpaceXEndpoints.rockets)\(id)"), resolvingAgainstBaseURL: true),
             let url = urlComponents.url
         else {

@@ -5,6 +5,6 @@
 //  Created by Tim Li on 16/9/21.
 //
 
-protocol BaseModel: Codable {
+protocol BaseModel: Codable, Equatable {
     
 }

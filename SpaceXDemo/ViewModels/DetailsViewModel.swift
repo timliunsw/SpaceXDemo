@@ -18,6 +18,7 @@ protocol DetailsViewModelProtocol {
     var notifyError: BehaviorRelay<NetworkError?> { get }
     
     func fetchDetails()
+    func fetchRocket(withRocketId rocketId: String)
     func generateDetailsContent(with launch: Launch, and rocket: Rocket) -> (String, String)
 }
 
@@ -28,11 +29,13 @@ class DetailsViewModel: DetailsViewModelProtocol {
     var launchText = BehaviorRelay<String>(value: "")
     var rocketText = BehaviorRelay<String>(value: "")
     var notifyError: BehaviorRelay<NetworkError?> = BehaviorRelay(value: nil)
+    var apiService: APIServiceProtocol!
     
     private let bag = DisposeBag()
     
-    init(flightNumber: Int) {
+    init(apiService: APIServiceProtocol = APIService.shared, flightNumber: Int) {
         self.flightNumber = flightNumber
+        self.apiService = apiService
         
         setupReactive()
         fetchDetails()
@@ -66,36 +69,42 @@ private extension DetailsViewModel {
 // MARK: Handle data
 extension DetailsViewModel {
     func fetchDetails() {
-        APIService.shared.fetchLaunch(withFlightNumber: flightNumber) { [weak self] result in
+        apiService.fetchLaunch(withFlightNumber: flightNumber) { [weak self] result in
             guard let self = self else {
                 return
             }
             
             if case .success(let launch) = result {
+                self.launch.accept(launch)
                 let rocketId = launch.rocket.id
-                
-                APIService.shared.fetchRocket(withRocketId: rocketId) { [weak self] rocket in
-                    guard let self = self else {
-                        return
-                    }
-                    
-                    switch rocket {
-                        case .success(let rocket):
-                            self.launch.accept(launch)
-                            self.rocket.accept(rocket)
-                        case .failure(let error):
-                            self.notifyError.accept(error)
-                    }
-                }
+                self.fetchRocket(withRocketId: rocketId)
             } else if case .failure(let error) = result {
                 self.notifyError.accept(error)
+                self.launch.accept(nil)
+                self.rocket.accept(nil)
+            }
+        }
+    }
+    
+    func fetchRocket(withRocketId rocketId: String) {
+        apiService.fetchRocket(withRocketId: rocketId) { [weak self] rocket in
+            guard let self = self else {
+                return
+            }
+            
+            switch rocket {
+                case .success(let rocket):
+                    self.rocket.accept(rocket)
+                case .failure(let error):
+                    self.notifyError.accept(error)
+                    self.rocket.accept(nil)
             }
         }
     }
     
     func generateDetailsContent(with launch: Launch, and rocket: Rocket) -> (String, String) {
         let successOrFail = launch.launchSuccess ? "Launch.Success".localized : "Launch.Fail".localized
-        let launchContent = "Launch Info\n\nLaunch mission \(launch.missionName) in \(launch.launchYear) \(successOrFail)\n\n\(launch.details)"
+        let launchContent = "Launch Info\nLaunch mission \(launch.missionName) in \(launch.launchYear) \(successOrFail)\n\(launch.details)"
         
         guard
             let company = rocket.company,
@@ -105,7 +114,7 @@ extension DetailsViewModel {
             return (launchContent, "")
         }
         
-        let rocketContent = "Rocket Details\n\nThe rocket \(rocket.name)'s type is \(rocket.type), and it belongs to \(company) in \(country).\n\n\(dec)"
+        let rocketContent = "Rocket Details\nThe rocket \(rocket.name)'s type is \(rocket.type), and it belongs to \(company) in \(country).\n\(dec)"
         return (launchContent, rocketContent)
     }
 }
