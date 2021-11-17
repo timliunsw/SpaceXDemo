@@ -1,22 +1,43 @@
 # SpaceXDemo
-iOS demo to display SpaceX data with Swift
+An iOS demo to display SpaceX data with Swift and demonstrate **MVVM** design pattern with **RxSwift**
 
-This is a demo app to demonstrate MVVM design pattern with RxSwift.
+**API documents are available here**: https://docs.spacexdata.com
 
-Base Api URL from SpaceX
-https://api.spacexdata.com/v3
+**Base URL from SpaceX**: https://api.spacexdata.com/v3
 
-Dependencies
+## Dependencies
+
 The following dependencies are managed by Cocoapods.
-To run the code, go to the project folder in the terminal and run pod install, then open the SpaceXDemo.xcworkspace.
-
+```
 Rxswift
 RxCocoa
 RxDataSources
+```
+CocoaPods is a dependency manager for Cocoa projects. Install it with the following command:
 
-Launching the app will fetch data from SpaceX api, and then show the launches with flight number, launch year and mission name.
-Clicking the cell will show the details of the specific launch.
-Tapping the accessory button of the cell will navigate user to Wikipedia page about the rocket.
-Implemented sorting fearture, including sorting launches by either launch date or mission name.
-Can filter by successful launches.
-I also add a reset feature to reset the data.
+```$ gem install cocoapods```
+
+To run the code, go to the project folder in the terminal and run the following command:
+
+```$ pod install```
+
+Then open the ```SpaceXDemo.xcworkspace``` file.
+
+## Feature
+* Display a list of launches, which are from SpaceX api. ```(flight number, mission name, year)```
+* Ability to sort launches by either launch date or mission name
+  * When sorted by launch date, launches are grouped by year
+  * When sorted by mission name, launches are grouped by the first alphabet
+* Ability to filter by launch success
+  * Cross icon indicates failure of the launch
+  * Check mark icon indicates success of the launch
+* When a launch is selected display a screen with detailed launch information and the
+rocket details used for the launch
+  * Launch information is from One Launch endpoint
+  * Rocket details is from One Rocket endpoint
+* Tap detail button of each cell will navigate users to Wikipedia page about the launch
+* Reset Button is to reset the data set
+* Support dark mode
+* Implemented autolayout
+* Unit tests are provided -> around 70% coverage
+* UI tests are provided -> around 83% coverage
