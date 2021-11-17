@@ -33,6 +33,7 @@ class MainViewController: UIViewController {
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: Constants.cellId)
         tableView.rowHeight = UITableView.automaticDimension
         tableView.backgroundColor = .clear
+        tableView.accessibilityIdentifier = "Launches Table View"
         
         return tableView
     }()
@@ -110,6 +111,7 @@ private extension MainViewController {
                 cell.textLabel?.text = "No.\(model.flightNumber), \(model.missionName) (\(model.launchYear))"
                 cell.imageView?.image = UIImage(systemName: model.launchSuccess ? "checkmark.seal.fill" : "xmark.seal.fill")
                 cell.imageView?.tintColor = model.launchSuccess ? #colorLiteral(red: 0, green: 1, blue: 0.8470588235, alpha: 0.85) : #colorLiteral(red: 1, green: 0.2117647059, blue: 0, alpha: 0.8470588235)
+                cell.accessibilityIdentifier = "No.\(model.flightNumber)"
                 return cell
             },
             titleForHeaderInSection: { dataSource, index in

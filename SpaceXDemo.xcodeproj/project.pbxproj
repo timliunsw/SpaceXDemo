@@ -27,7 +27,6 @@
 		0D0F88AD26F25F60003E6320 /* DetailsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D0F88AC26F25F60003E6320 /* DetailsViewModel.swift */; };
 		0DC14D0F27427BE700607722 /* UIViewController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DC14D0E27427BE700607722 /* UIViewController+Extension.swift */; };
 		0DC14D122742815D00607722 /* NetworkError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DC14D112742815D00607722 /* NetworkError.swift */; };
-		0DC14D1427428E8700607722 /* SpaceXDemoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DC14D1327428E8700607722 /* SpaceXDemoTests.swift */; };
 		0DC14D1B27429C6900607722 /* Launch.json in Resources */ = {isa = PBXBuildFile; fileRef = 0DC14D1827429C6800607722 /* Launch.json */; };
 		0DC14D1C27429C6900607722 /* Rocket.json in Resources */ = {isa = PBXBuildFile; fileRef = 0DC14D1927429C6800607722 /* Rocket.json */; };
 		0DC14D1D27429C6900607722 /* Launches.json in Resources */ = {isa = PBXBuildFile; fileRef = 0DC14D1A27429C6800607722 /* Launches.json */; };
@@ -88,7 +87,6 @@
 		0D0F88AC26F25F60003E6320 /* DetailsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailsViewModel.swift; sourceTree = "<group>"; };
 		0DC14D0E27427BE700607722 /* UIViewController+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+Extension.swift"; sourceTree = "<group>"; };
 		0DC14D112742815D00607722 /* NetworkError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkError.swift; sourceTree = "<group>"; };
-		0DC14D1327428E8700607722 /* SpaceXDemoTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpaceXDemoTests.swift; sourceTree = "<group>"; };
 		0DC14D1827429C6800607722 /* Launch.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Launch.json; sourceTree = "<group>"; };
 		0DC14D1927429C6800607722 /* Rocket.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Rocket.json; sourceTree = "<group>"; };
 		0DC14D1A27429C6800607722 /* Launches.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Launches.json; sourceTree = "<group>"; };
@@ -184,7 +182,6 @@
 				0DC14D1E27429EC200607722 /* Helpers */,
 				0DC14D262742A82000607722 /* Models */,
 				0DC14D42274411C700607722 /* ViewModels */,
-				0DC14D1327428E8700607722 /* SpaceXDemoTests.swift */,
 				0D0F887326F20F72003E6320 /* Info.plist */,
 			);
 			path = SpaceXDemoTests;
@@ -617,7 +614,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0DC14D1427428E8700607722 /* SpaceXDemoTests.swift in Sources */,
 				0DC14D2A2742B2F500607722 /* RocketTests.swift in Sources */,
 				0DC14D2127429FB900607722 /* Data+Extension.swift in Sources */,
 				0DC14D322742B79800607722 /* MockAPIService.swift in Sources */,
