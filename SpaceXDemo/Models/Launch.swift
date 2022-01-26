@@ -7,7 +7,7 @@
 
 import Foundation
 
-class Launch: BaseModel {
+struct Launch {
     var flightNumber: Int
     var missionName: String
     var launchYear: String
@@ -17,7 +17,7 @@ class Launch: BaseModel {
     var links: Link
     var rocket: Rocket
     
-    enum CodingKeys: String, CodingKey {
+    private enum CodingKeys: String, CodingKey {
         case flightNumber = "flight_number"
         case missionName = "mission_name"
         case launchYear = "launch_year"
@@ -25,19 +25,10 @@ class Launch: BaseModel {
         case launchSuccess = "launch_success"
         case links, details, rocket
     }
-    
-    init(flightNumber: Int, missionName: String, launchYear: String, launchDate: Int, launchSuccess: Bool, links: Link, details: String, rocket: Rocket) {
-        self.flightNumber = flightNumber
-        self.missionName = missionName
-        self.launchYear = launchYear
-        self.launchDate = launchDate
-        self.launchSuccess = launchSuccess
-        self.links = links
-        self.details = details
-        self.rocket = rocket
-    }
-    
-    required init(from decoder: Decoder) throws {
+}
+
+extension Launch: Codable {
+    init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         
         flightNumber = try container.decodeIfPresent(Int.self, forKey: .flightNumber) ?? 0
@@ -51,9 +42,10 @@ class Launch: BaseModel {
     }
     
     func encode(to encoder: Encoder) throws { }
-    
+}
+
+extension Launch: Equatable {
     static func == (lhs: Launch, rhs: Launch) -> Bool {
         return lhs.flightNumber == rhs.flightNumber
     }
 }
-

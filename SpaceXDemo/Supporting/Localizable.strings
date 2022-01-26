@@ -5,13 +5,15 @@
   Created by Tim Li on 15/9/21.
   
 */
+"Filter" = "Filter";
+"Cancel" = "Cancel";
+"OK" = "OK";
+"Sort" = "Sort";
+"Alert" = "Alert";
 "Nav.Title.Launch" = "SpaceX Launches";
 "Nav.Title.Details" = "Launch Details";
 "Launch.Success" = "launched successfully.";
 "Launch.Fail" = "failed to launch.";
-"Filter" = "Filter";
-"Cancel" = "Cancel";
-"Sort" = "Sort";
 "Sort.Alert.Title" = "Sort launches";
 "Sort.Alert.Message" = "Please select an option";
 "Sort.Alert.Option.Date" = "By launch date";
@@ -19,6 +21,7 @@
 "Filter.Alert.Title" = "Filter launches";
 "Filter.Alert.Message" = "Please select an option";
 "Filter.Alert.Option.Success" = "By launch success";
+"Filter.Alert.Option.Failure" = "By launch failure";
 "System.Network.Error.Invalid" = "Invalid response";
 "System.Network.Error.BadUrl" = "The URL is not valid";
 "System.Network.Error.RequestFailed" = "Request failed";

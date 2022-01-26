@@ -9,8 +9,7 @@ import UIKit
 import RxSwift
 import RxCocoa
 
-class DetailsViewController: UIViewController {
-
+class DetailsViewController: BaseViewController {
     private let detailsStackView: UIStackView = {
         let stackView = UIStackView()
         stackView.translatesAutoresizingMaskIntoConstraints = false
@@ -47,7 +46,6 @@ class DetailsViewController: UIViewController {
         return label
     }()
     
-    private let bag = DisposeBag()
     private var viewModel: DetailsViewModel!
     
     static func newInstance(with viewModel: DetailsViewModel) -> DetailsViewController {
@@ -64,7 +62,14 @@ class DetailsViewController: UIViewController {
     }
 }
 
-// MARK: Layout
+// MARK: - LoadingStatusObserver
+extension DetailsViewController: LoadingStatusObserver {
+    var loadingStatusEmitable: LoadingStatusEmitable {
+        viewModel
+    }
+}
+
+// MARK: - Layout
 private extension DetailsViewController {
     func setupView() {
         navigationItem.title = "Nav.Title.Details".localized
@@ -80,17 +85,23 @@ private extension DetailsViewController {
             detailsStackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -10),
             detailsStackView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -10),
         ])
+        
+        setupActivityIndicator()
     }
 }
 
-// MARK: Reactive
+// MARK: - Reactive
 private extension DetailsViewController {
     func bindViews() {
-        viewModel.launchText.asObservable()
+        bindLoadingStatus()
+        
+        viewModel.launchText
+            .asObservable()
             .bind(to:self.launchLabel.rx.text)
             .disposed(by: bag)
         
-        viewModel.rocketText.asObservable()
+        viewModel.rocketText
+            .asObservable()
             .bind(to:self.rocketLabel.rx.text)
             .disposed(by: bag)
         
@@ -104,7 +115,9 @@ private extension DetailsViewController {
                     return
                 }
                 
-                self.showAlert(error.localizedDescription)
+                DispatchQueue.main.async {
+                    self.showAlert(error.localizedDescription)
+                }
             })
             .disposed(by: bag)
     }

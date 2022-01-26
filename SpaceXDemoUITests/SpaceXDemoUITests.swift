@@ -64,7 +64,7 @@ extension SpaceXDemoUITests {
         let cell = app.tables.cells["No.1"]
         expectation(for: predicate, evaluatedWith: cell, handler: nil)
 
-        waitForExpectations(timeout: 3, handler: nil)
+        waitForExpectations(timeout: 30, handler: nil)
         
         let detailButton = cell.buttons["More Info"]
         XCTAssertTrue(detailButton.exists, "Detail button exists")
@@ -82,8 +82,14 @@ extension SpaceXDemoUITests {
         XCTAssertTrue(filterSheet.exists, "Filter alert exists")
                 
         let successFilterButton = filterSheet.buttons["By launch success"]
-        XCTAssertTrue(successFilterButton.exists, "Success Filter option exists")
+        XCTAssertTrue(successFilterButton.exists, "Success filter option exists")
         successFilterButton.tap()
+        
+        filterButton.tap()
+        
+        let failedFilterButton = filterSheet.buttons["By launch failure"]
+        XCTAssertTrue(failedFilterButton.exists, "Failure filter option exists")
+        failedFilterButton.tap()
         
         filterButton.tap()
         
@@ -138,21 +144,23 @@ extension SpaceXDemoUITests {
             let count: Int = (cells.count - 1)
 
             let promise = expectation(description: "Wait for table cells")
-
-            for i in stride(from: 0, to: count , by: 1) {
+            
+            // If the number of cells is more than 10, will test 10 times.
+            let times = count > 10 ? 10 : count
+            for i in stride(from: 0, to: times , by: 1) {
                 // Grab the first cell and verify that it exists and tap it
                 let tableCell = cells.element(boundBy: i)
                 XCTAssertTrue(tableCell.exists, "The \(i) cell is in place on the table")
                 // Does this actually take us to the next screen
                 tableCell.tap()
 
-                if i == (count - 1) {
+                if i == (times - 1) {
                     promise.fulfill()
                 }
                 // Back
                 app.navigationBars.buttons.element(boundBy: 0).tap()
             }
-            waitForExpectations(timeout: 20, handler: nil)
+            waitForExpectations(timeout: 30, handler: nil)
             XCTAssertTrue(true, "Finished validating the table cells")
 
         } else {

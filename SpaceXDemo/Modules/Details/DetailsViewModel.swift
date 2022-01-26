@@ -9,31 +9,15 @@ import Foundation
 import RxSwift
 import RxCocoa
 
-protocol DetailsViewModelProtocol {
-    var flightNumber: Int { get }
-    var launch: BehaviorRelay<Launch?> { get }
-    var rocket: BehaviorRelay<Rocket?> { get }
-    var launchText: BehaviorRelay<String> { get }
-    var rocketText: BehaviorRelay<String> { get }
-    var notifyError: BehaviorRelay<NetworkError?> { get }
-    
-    func fetchDetails()
-    func fetchRocket(withRocketId rocketId: String)
-    func generateDetailsContent(with launch: Launch, and rocket: Rocket) -> (String, String)
-}
-
-class DetailsViewModel: DetailsViewModelProtocol {
+class DetailsViewModel: BaseViewModel, DetailsViewModelProtocol {
     var flightNumber: Int = 0
     var launch: BehaviorRelay<Launch?> = BehaviorRelay<Launch?>(value: nil)
     var rocket: BehaviorRelay<Rocket?> = BehaviorRelay<Rocket?>(value: nil)
     var launchText = BehaviorRelay<String>(value: "")
     var rocketText = BehaviorRelay<String>(value: "")
-    var notifyError: BehaviorRelay<NetworkError?> = BehaviorRelay(value: nil)
-    var apiService: APIServiceProtocol!
-    
-    private let bag = DisposeBag()
     
     init(apiService: APIServiceProtocol = APIService.shared, flightNumber: Int) {
+        super.init()
         self.flightNumber = flightNumber
         self.apiService = apiService
         
@@ -42,7 +26,7 @@ class DetailsViewModel: DetailsViewModelProtocol {
     }
 }
 
-// MARK: Reactive
+// MARK: - Reactive
 private extension DetailsViewModel {
     func setupReactive() {
         Observable.combineLatest(launch.asObservable(),
@@ -66,27 +50,32 @@ private extension DetailsViewModel {
     }
 }
 
-// MARK: Handle data
+// MARK: - Handle data
 extension DetailsViewModel {
     func fetchDetails() {
+        isLoading.accept(true)
         apiService.fetchLaunch(withFlightNumber: flightNumber) { [weak self] result in
             guard let self = self else {
                 return
             }
             
-            if case .success(let launch) = result {
-                self.launch.accept(launch)
-                let rocketId = launch.rocket.id
-                self.fetchRocket(withRocketId: rocketId)
-            } else if case .failure(let error) = result {
-                self.notifyError.accept(error)
-                self.launch.accept(nil)
-                self.rocket.accept(nil)
+            switch result {
+                case .success(let launch):
+                    self.launch.accept(launch)
+                    let rocketId = launch.rocket.id
+                    self.fetchRocket(withRocketId: rocketId)
+                case .failure(let error):
+                    self.notifyError.accept(error)
+                    self.launch.accept(nil)
+                    self.rocket.accept(nil)
             }
+            
+            self.isLoading.accept(false)
         }
     }
     
     func fetchRocket(withRocketId rocketId: String) {
+        isLoading.accept(true)
         apiService.fetchRocket(withRocketId: rocketId) { [weak self] rocket in
             guard let self = self else {
                 return
@@ -99,6 +88,7 @@ extension DetailsViewModel {
                     self.notifyError.accept(error)
                     self.rocket.accept(nil)
             }
+            self.isLoading.accept(false)
         }
     }
     

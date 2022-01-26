@@ -16,5 +16,5 @@ enum Constants {
     }
     
     static let cellId = "CellIdentifier"
-    
+    static let accessibilityIdentifier = "Launches Table View"
 }

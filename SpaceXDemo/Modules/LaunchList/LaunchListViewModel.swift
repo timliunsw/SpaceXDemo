@@ -1,5 +1,5 @@
 //
-//  MainViewModel.swift
+//  LaunchListViewModel.swift
 //  SpaceXDemo
 //
 //  Created by Tim Li on 15/9/21.
@@ -9,28 +9,12 @@ import Foundation
 import RxSwift
 import RxCocoa
 
-protocol MainViewModelProtocol {
-    var launches: BehaviorRelay<[Launch]> { get }
-    var launchesObservable: BehaviorRelay<[LaunchSection]> { get }
-    var filteredLaunches: BehaviorRelay<[LaunchSection]> { get }
-    var notifyError: BehaviorRelay<NetworkError?> { get }
-    
-    func fetchLaunches(completion: (() -> Void)?)
-    func launchesSortedByDate()
-    func launchesSortedByMissionName()
-    func launchesFilteredBySuccess()
-    func resetLaunches()
-}
-
-class MainViewModel: MainViewModelProtocol {
+class LaunchListViewModel: BaseViewModel, LaunchListViewModelProtocol {
     var launches: BehaviorRelay<[Launch]> = BehaviorRelay(value: [])
     var launchesObservable: BehaviorRelay<[LaunchSection]> = BehaviorRelay(value: [])
-    var filteredLaunches: BehaviorRelay<[LaunchSection]> = BehaviorRelay(value: [])
-    var notifyError: BehaviorRelay<NetworkError?> = BehaviorRelay(value: nil)
-    var apiService: APIServiceProtocol!
-    private let bag = DisposeBag()
     
     init(apiService: APIServiceProtocol = APIService.shared) {
+        super.init()
         self.apiService = apiService
         
         setupReactive()
@@ -38,8 +22,8 @@ class MainViewModel: MainViewModelProtocol {
     }
 }
 
-// MARK: Reactive
-private extension MainViewModel {
+// MARK: - Reactive
+private extension LaunchListViewModel {
     func setupReactive() {
         launches.asObservable()
             .subscribe(onNext: { [weak self] launches in
@@ -55,15 +39,15 @@ private extension MainViewModel {
                 })
                 
                 self.launchesObservable.accept(sections)
-                self.setFilteredLaunches(with: launches)
             })
             .disposed(by: bag)
     }
 }
 
-// MARK: Handle data
-extension MainViewModel {
+// MARK: - Handle data
+extension LaunchListViewModel {
     func fetchLaunches(completion: (() -> Void)? = nil) {
+        isLoading.accept(true)
         apiService.fetchLaunches() { [weak self] result in
             guard let self = self else {
                 completion?()
@@ -77,6 +61,7 @@ extension MainViewModel {
                     self.notifyError.accept(error)
             }
             
+            self.isLoading.accept(false)
             completion?()
         }
     }
@@ -133,23 +118,36 @@ extension MainViewModel {
         .disposed(by: bag)
     }
     
-    func launchesFilteredBySuccess() {
-        launchesObservable.accept(filteredLaunches.value)
+    func filterLaunchesBy(status isSuccess: Bool) {
+        _ = Observable.just(launches.value)
+            .map {
+                $0.filter { $0.launchSuccess == isSuccess }
+            }
+            .subscribe(onNext: { [weak self] launches in
+                guard let self = self else {
+                    return
+                }
+                var sections: [LaunchSection] = []
+                
+                launches.forEach({ launch in
+                    let header: String = " "
+                    let section = LaunchSection(header: header, items: [launch])
+                    sections.append(section)
+                })
+                
+                self.launchesObservable.accept(sections)
+            })
+            .disposed(by: bag)
     }
     
     func resetLaunches() {
-        fetchLaunches()
-    }
-    
-    private func setFilteredLaunches(with launches: [Launch]) {
-        let successedLaunches = launches.filter { $0.launchSuccess }
-        var sortedSections: [LaunchSection] = []
-        successedLaunches.forEach({ launch in
-            let header: String = " "
-            let section = LaunchSection(header: header, items: [launch])
-            sortedSections.append(section)
-        })
-        
-        self.filteredLaunches.accept(sortedSections)
+        var sections: [LaunchSection] = []
+        launches.value
+            .forEach({ launch in
+                let header: String = " "
+                let section = LaunchSection(header: header, items: [launch])
+                sections.append(section)
+            })
+        launchesObservable.accept(sections)
     }
 }

@@ -1,5 +1,5 @@
 //
-//  MainViewController.swift
+//  LaunchListViewController.swift
 //  SpaceXDemo
 //
 //  Created by Tim Li on 15/9/21.
@@ -10,21 +10,7 @@ import RxSwift
 import RxDataSources
 import SafariServices
 
-struct LaunchSection {
-    var header: String
-    var items: [Item]
-}
-
-extension LaunchSection: SectionModelType {
-    typealias Item = Launch
-    
-    init(original: LaunchSection, items: [Item]) {
-        self = original
-        self.items = items
-    }
-}
-
-class MainViewController: UIViewController {
+class LaunchListViewController: BaseViewController {
     typealias DataSource = RxTableViewSectionedReloadDataSource<LaunchSection>
     
     let tableView: UITableView = {
@@ -32,8 +18,8 @@ class MainViewController: UIViewController {
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: Constants.cellId)
         tableView.rowHeight = UITableView.automaticDimension
-        tableView.backgroundColor = .clear
-        tableView.accessibilityIdentifier = "Launches Table View"
+        tableView.backgroundColor = .secondarySystemBackground
+        tableView.accessibilityIdentifier = Constants.accessibilityIdentifier
         
         return tableView
     }()
@@ -44,12 +30,11 @@ class MainViewController: UIViewController {
         return control
     }()
     
-    private let bag = DisposeBag()
-    var viewModel: MainViewModel!
+    var viewModel: LaunchListViewModel!
     
-    static func newInstance() -> MainViewController {
-        let vc = MainViewController()
-        vc.viewModel = MainViewModel()
+    static func newInstance() -> LaunchListViewController {
+        let vc = LaunchListViewController()
+        vc.viewModel = LaunchListViewModel()
         return vc
     }
     
@@ -61,13 +46,14 @@ class MainViewController: UIViewController {
     }
 }
 
-// MARK: Layout
-private extension MainViewController {
+// MARK: - Layout
+private extension LaunchListViewController {
     func setupView() {
         view.backgroundColor = .systemBackground
         
         setupNavigationItem()
         setupTableView()
+        setupActivityIndicator()
     }
     
     func setupNavigationItem() {
@@ -85,9 +71,18 @@ private extension MainViewController {
     }
 }
 
-// MARK: Reactive
-private extension MainViewController {
+// MARK: - LoadingStatusObserver
+extension LaunchListViewController: LoadingStatusObserver {
+    var loadingStatusEmitable: LoadingStatusEmitable {
+        viewModel
+    }
+}
+
+// MARK: - Reactive
+private extension LaunchListViewController {
     func bindViews() {
+        bindLoadingStatus()
+        
         refreshControl.rx
             .controlEvent(UIControl.Event.valueChanged)
             .subscribe(onNext: { [weak self] in
@@ -95,10 +90,10 @@ private extension MainViewController {
                     return
                 }
                 
-                self.viewModel.fetchLaunches() {
-                    DispatchQueue.main.async {
-                        self.refreshControl.endRefreshing()
-                    }
+                self.viewModel.fetchLaunches()
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    self.refreshControl.endRefreshing()
                 }
             })
             .disposed(by: bag)
@@ -134,28 +129,28 @@ private extension MainViewController {
                     return
                 }
                 
-                let viewModel = DetailsViewModel(flightNumber: flightNumber)
-                let detailsVC = DetailsViewController.newInstance(with: viewModel)
-                
-                self.navigationController?.pushViewController(detailsVC, animated: true)
+                DispatchQueue.main.async {
+                    let viewModel = DetailsViewModel(flightNumber: flightNumber)
+                    let detailsVC = DetailsViewController.newInstance(with: viewModel)
+                    
+                    self.navigationController?.pushViewController(detailsVC, animated: true)
+                }
             }).disposed(by: bag)
         
         tableView.rx
             .itemAccessoryButtonTapped
             .subscribe(onNext: { [weak self] indexPath in
-                guard let self = self else {
-                    return
-                }
-                
-                let launch = self.viewModel.launches.value[indexPath.row]
                 guard
-                    let url = URL(string: launch.links.wikipedia),
+                    let self = self,
+                    let url = URL(string: self.viewModel.launches.value[indexPath.row].links.wikipedia),
                     UIApplication.shared.canOpenURL(url)
                 else {
                     return
                 }
                 
-                self.present(SFSafariViewController(url: url), animated: true)
+                DispatchQueue.main.async {
+                    self.present(SFSafariViewController(url: url), animated: true)
+                }
             })
             .disposed(by: bag)
         
@@ -169,28 +164,32 @@ private extension MainViewController {
                     return
                 }
                 
-                self.showAlert(error.localizedDescription)
+                DispatchQueue.main.async {
+                    self.showAlert(error.localizedDescription)
+                }
             })
             .disposed(by: bag)
     }
 }
 
-// MARK: sort and filter
-extension MainViewController {
+// MARK: - Sort/filter popup
+extension LaunchListViewController {
     @objc private func sortAlert() {
         let alert = UIAlertController(title: "Sort.Alert.Title".localized, message: "Sort.Alert.Message".localized, preferredStyle: .actionSheet)
         
-        alert.addAction(UIAlertAction(title: "Sort.Alert.Option.Date".localized, style: .default , handler:{ [weak self] (UIAlertAction) in
+        alert.addAction(UIAlertAction(title: "Sort.Alert.Option.Date".localized, style: .default , handler: { [weak self] (UIAlertAction) in
             guard let self = self else {
                 return
             }
+            
             self.viewModel.launchesSortedByDate()
         }))
         
-        alert.addAction(UIAlertAction(title: "Sort.Alert.Option.Mission".localized, style: .default , handler:{ [weak self] (UIAlertAction) in
+        alert.addAction(UIAlertAction(title: "Sort.Alert.Option.Mission".localized, style: .default , handler: { [weak self] (UIAlertAction) in
             guard let self = self else {
                 return
             }
+            
             self.viewModel.launchesSortedByMissionName()
         }))
         
@@ -202,11 +201,20 @@ extension MainViewController {
     @objc private func filterAlert() {
         let alert = UIAlertController(title: "Filter.Alert.Title".localized, message: "Filter.Alert.Message".localized, preferredStyle: .actionSheet)
         
-        alert.addAction(UIAlertAction(title: "Filter.Alert.Option.Success".localized, style: .default , handler:{ [weak self] (UIAlertAction) in
+        alert.addAction(UIAlertAction(title: "Filter.Alert.Option.Success".localized, style: .default , handler: { [weak self] (UIAlertAction) in
             guard let self = self else {
                 return
             }
-            self.viewModel.launchesFilteredBySuccess()
+            
+            self.viewModel.filterLaunchesBy(status: true)
+        }))
+        
+        alert.addAction(UIAlertAction(title: "Filter.Alert.Option.Failure".localized, style: .default , handler: { [weak self] (UIAlertAction) in
+            guard let self = self else {
+                return
+            }
+            
+            self.viewModel.filterLaunchesBy(status: false)
         }))
         
         alert.addAction(UIAlertAction(title: "Cancel".localized, style: .cancel , handler: nil))

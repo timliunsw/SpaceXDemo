@@ -7,7 +7,7 @@
 
 import Foundation
 
-class Rocket: BaseModel {
+struct Rocket {
     var id: String
     var name: String
     var type: String
@@ -15,23 +15,16 @@ class Rocket: BaseModel {
     var country: String?
     var company: String?
     
-    enum CodingKeys: String, CodingKey {
+    private enum CodingKeys: String, CodingKey {
         case id = "rocket_id"
         case name = "rocket_name"
         case type = "rocket_type"
         case description, country, company
     }
-    
-    init(id: String, name: String, type: String, description: String?, country: String?, company: String?) {
-        self.id = id
-        self.name = name
-        self.type = type
-        self.description = description
-        self.country = country
-        self.company = company
-    }
-    
-    required init(from decoder: Decoder) throws {
+}
+
+extension Rocket: Codable {
+    init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         
         id = try container.decodeIfPresent(String.self, forKey: .id) ?? ""
@@ -43,7 +36,9 @@ class Rocket: BaseModel {
     }
     
     func encode(to encoder: Encoder) throws { }
-    
+}
+
+extension Rocket: Equatable {
     static func == (lhs: Rocket, rhs: Rocket) -> Bool {
         return lhs.id == rhs.id
     }

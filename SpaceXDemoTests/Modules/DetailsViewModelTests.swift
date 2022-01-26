@@ -130,7 +130,7 @@ class DetailsViewModelTests: XCTestCase {
         XCTAssertEqual(sut.notifyError.value?.localizedDescription, expectedError.localizedDescription)
     }
     
-    func testFetchRocketByRocketIdSuccess() throws {
+    func testFetchRocketByRocketIdSuccess() {
         mockAPIService.status = .success
         mockAPIService.mockRocket = rocket
         mockAPIService.mockErrorResponse = nil

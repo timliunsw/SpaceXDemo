@@ -1,5 +1,5 @@
 //
-//  MainViewModelTests.swift
+//  LaunchListViewModelTests.swift
 //  SpaceXDemoTests
 //
 //  Created by Tim Li on 17/11/21.
@@ -9,10 +9,10 @@ import XCTest
 @testable import SpaceXDemo
 import RxSwift
 
-class MainViewModelTests: XCTestCase {
-    var sut: MainViewModel!
+class LaunchListViewModelTests: XCTestCase {
+    var sut: LaunchListViewModel!
     var mockAPIService: MockAPIService!
-    var mockViewController: MockMainViewController!
+    var mockViewController: MockLaunchListViewController!
     var launches: [Launch]!
     
     override func setUpWithError() throws {
@@ -20,7 +20,7 @@ class MainViewModelTests: XCTestCase {
         launches = try givenLaunchesFromJSON()
         mockAPIService = MockAPIService()
         mockAPIService.mockLaunches = []
-        sut = MainViewModel(apiService: mockAPIService)
+        sut = LaunchListViewModel(apiService: mockAPIService)
         givenMockViewController()
     }
     
@@ -35,7 +35,6 @@ class MainViewModelTests: XCTestCase {
     func testLaunchViewModelsAfterInit() {
         XCTAssertTrue(sut.launches.value.isEmpty)
         XCTAssertTrue(sut.launchesObservable.value.isEmpty)
-        XCTAssertTrue(sut.filteredLaunches.value.isEmpty)
     }
     
     func testNotifyErrorwhenInit() {
@@ -44,7 +43,7 @@ class MainViewModelTests: XCTestCase {
     
     func testLaunchesCallbackAfterFetched() {
         let exp = expectation(for: NSPredicate(block: { (mockViewController, _) -> Bool in
-            return (mockViewController as! MockMainViewController).launchesCallback
+            return (mockViewController as! MockLaunchListViewController).launchesCallback
         }), evaluatedWith: mockViewController, handler: nil)
         
         whenGivenLaunches()
@@ -54,7 +53,7 @@ class MainViewModelTests: XCTestCase {
     
     func testNotifyErrorCallbackAfterFetched() {
         let exp = expectation(for: NSPredicate(block: { (mockViewController, _) -> Bool in
-            return (mockViewController as! MockMainViewController).notifyErrorCallback
+            return (mockViewController as! MockLaunchListViewController).notifyErrorCallback
         }), evaluatedWith: mockViewController, handler: nil)
         
         sut.notifyError.accept(.requestFailed)
@@ -125,17 +124,31 @@ class MainViewModelTests: XCTestCase {
         mockAPIService.mockErrorResponse = nil
         
         sut.fetchLaunches()
-        sut.launchesFilteredBySuccess()
+        sut.filterLaunchesBy(status: true)
         
         XCTAssertNotNil(sut.launchesObservable.value)
         XCTAssertEqual(sut.launchesObservable.value.count, successfulLaunches.count)
     }
+    
+    func testLaunchesFilteredByFailure() {
+        let failedLaunches = launches.filter { !$0.launchSuccess }
+        
+        mockAPIService.status = .success
+        mockAPIService.mockLaunches = launches
+        mockAPIService.mockErrorResponse = nil
+        
+        sut.fetchLaunches()
+        sut.filterLaunchesBy(status: false)
+        
+        XCTAssertNotNil(sut.launchesObservable.value)
+        XCTAssertEqual(sut.launchesObservable.value.count, failedLaunches.count)
+    }
 }
 
 // MARK: data
-extension MainViewModelTests {
+extension LaunchListViewModelTests {
     private func givenMockViewController() {
-        mockViewController = MockMainViewController()
+        mockViewController = MockLaunchListViewController()
         mockViewController.viewModel = sut
         mockViewController.loadViewIfNeeded()
     }
@@ -156,8 +169,8 @@ extension MainViewModelTests {
     }
 }
 
-class MockMainViewController: UIViewController {
-    var viewModel: MainViewModelProtocol = MainViewModel()
+class MockLaunchListViewController: UIViewController {
+    var viewModel: LaunchListViewModelProtocol = LaunchListViewModel()
     var bag = DisposeBag()
     var launchesCallback = false
     var notifyErrorCallback = false
