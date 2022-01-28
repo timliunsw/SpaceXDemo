@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// Network error type.
 enum NetworkError: Error {
     case invalidResponse(Data?, URLResponse?)
     case badURL
@@ -14,6 +15,7 @@ enum NetworkError: Error {
 }
 
 extension NetworkError {
+    /// Retrieve the localized description for errors.
     var localizedDescription: String {
         switch self {
         case .invalidResponse:

@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// The model for link.
 struct Link {
     let wikipedia: String
     

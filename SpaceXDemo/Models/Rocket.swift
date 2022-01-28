@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// The model for rocket.
 struct Rocket {
     var id: String
     var name: String

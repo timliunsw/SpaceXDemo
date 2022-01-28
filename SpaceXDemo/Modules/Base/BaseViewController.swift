@@ -8,10 +8,13 @@
 import UIKit
 import RxSwift
 
-class BaseViewController: UIViewController {
+/**
+ Base view controller for all view controllers.
+ It is configured with shared variables and presentation logical functions.
+ */
+class BaseViewController: UIViewController, DisposeBagManagedObserver {
     let bag = DisposeBag()
-    
-    
+
     var activityIndicator: UIActivityIndicatorView = {
         let indicatorView = UIActivityIndicatorView()
         indicatorView.translatesAutoresizingMaskIntoConstraints = false
@@ -23,12 +26,12 @@ class BaseViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
     }
 }
 
 // MARK: - ActivityIndicatable
 extension BaseViewController: ActivityIndicatable {
+    /// Add activity indicator to view
     func setupActivityIndicator() {
         view.addSubview(activityIndicator)
         NSLayoutConstraint.activate([

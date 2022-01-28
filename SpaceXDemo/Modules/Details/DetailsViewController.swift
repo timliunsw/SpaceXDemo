@@ -20,6 +20,7 @@ class DetailsViewController: BaseViewController {
         return stackView
     }()
     
+    // Launch infomation label
     private let launchLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -33,6 +34,7 @@ class DetailsViewController: BaseViewController {
         return label
     }()
     
+    // Rocket infomation label
     private let rocketLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -48,6 +50,13 @@ class DetailsViewController: BaseViewController {
     
     private var viewModel: DetailsViewModel!
     
+    /**
+     `DetailsViewController` initialization.
+     
+     - parameter viewModel: View model bind to the view controller.
+     
+     - returns: The instance of `DetailsViewController`.
+     */
     static func newInstance(with viewModel: DetailsViewModel) -> DetailsViewController {
         let vc = DetailsViewController()
         vc.viewModel = viewModel
@@ -95,16 +104,19 @@ private extension DetailsViewController {
     func bindViews() {
         bindLoadingStatus()
         
+        // Bind launch information to be presented launch Label.
         viewModel.launchText
             .asObservable()
             .bind(to:self.launchLabel.rx.text)
             .disposed(by: bag)
         
+        // Bind rocket information to be presented rocket Label.
         viewModel.rocketText
             .asObservable()
             .bind(to:self.rocketLabel.rx.text)
             .disposed(by: bag)
         
+        // Subscribe the error BehaviorRelay
         viewModel.notifyError
             .asDriver()
             .drive(onNext: { [weak self] error in

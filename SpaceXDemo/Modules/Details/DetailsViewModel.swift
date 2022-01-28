@@ -9,6 +9,9 @@ import Foundation
 import RxSwift
 import RxCocoa
 
+/**
+ Details view model, which confirms `BaseViewModel` and `DetailsViewModelProtocol`.
+ */
 class DetailsViewModel: BaseViewModel, DetailsViewModelProtocol {
     var flightNumber: Int = 0
     var launch: BehaviorRelay<Launch?> = BehaviorRelay<Launch?>(value: nil)
@@ -16,6 +19,13 @@ class DetailsViewModel: BaseViewModel, DetailsViewModelProtocol {
     var launchText = BehaviorRelay<String>(value: "")
     var rocketText = BehaviorRelay<String>(value: "")
     
+    /**
+     `DetailsViewModel` initialization.
+     
+     - parameter apiService: A manager used for handling API service.
+     It is `APIService.shared` by default.
+     - parameter flightNumber: The flight number of the specified launch.
+     */
     init(apiService: APIServiceProtocol = APIService.shared, flightNumber: Int) {
         super.init()
         self.flightNumber = flightNumber

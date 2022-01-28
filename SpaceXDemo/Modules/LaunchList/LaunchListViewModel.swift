@@ -9,10 +9,19 @@ import Foundation
 import RxSwift
 import RxCocoa
 
+/**
+ Launch list view model, which confirms `BaseViewModel` and `LaunchListViewModelProtocol`.
+ */
 class LaunchListViewModel: BaseViewModel, LaunchListViewModelProtocol {
     var launches: BehaviorRelay<[Launch]> = BehaviorRelay(value: [])
     var launchesObservable: BehaviorRelay<[LaunchSection]> = BehaviorRelay(value: [])
     
+    /**
+     `LaunchListViewModel` initialization.
+     
+     - parameter apiService: A manager used for handling API service.
+     It is `APIService.shared` by default.
+     */
     init(apiService: APIServiceProtocol = APIService.shared) {
         super.init()
         self.apiService = apiService

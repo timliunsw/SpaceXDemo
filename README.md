@@ -28,7 +28,7 @@ Then open the ```SpaceXDemo.xcworkspace``` file.
 * Ability to sort launches by either launch date or mission name
   * When sorted by launch date, launches are grouped by year
   * When sorted by mission name, launches are grouped by the first alphabet
-* Ability to filter by launch success
+* Ability to filter launches by success/failure
   * Cross icon indicates failure of the launch
   * Check mark icon indicates success of the launch
 * When a launch is selected display a screen with detailed launch information and the
@@ -39,5 +39,5 @@ rocket details used for the launch
 * Reset Button is to reset the data set
 * Support dark mode
 * Implemented autolayout
-* Unit tests are provided -> around 70% coverage
-* UI tests are provided -> around 83% coverage
+* Unit tests are provided
+* UI tests are provided

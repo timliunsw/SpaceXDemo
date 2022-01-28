@@ -11,6 +11,7 @@ import RxDataSources
 import SafariServices
 
 class LaunchListViewController: BaseViewController {
+    /// Wrapper for data source of launch section
     typealias DataSource = RxTableViewSectionedReloadDataSource<LaunchSection>
     
     let tableView: UITableView = {
@@ -32,6 +33,11 @@ class LaunchListViewController: BaseViewController {
     
     var viewModel: LaunchListViewModel!
     
+    /**
+     `LaunchListViewController` initialization.
+     
+     - returns: The instance of `LaunchListViewController`.
+     */
     static func newInstance() -> LaunchListViewController {
         let vc = LaunchListViewController()
         vc.viewModel = LaunchListViewModel()
@@ -83,6 +89,7 @@ private extension LaunchListViewController {
     func bindViews() {
         bindLoadingStatus()
         
+        // Subscribe refresh control event
         refreshControl.rx
             .controlEvent(UIControl.Event.valueChanged)
             .subscribe(onNext: { [weak self] in
@@ -98,6 +105,7 @@ private extension LaunchListViewController {
             })
             .disposed(by: bag)
         
+        // Bind data source to table view
         let dataSource = DataSource(
             configureCell: { (_, tableView, indexPath, model) in
                 let cell = tableView.dequeueReusableCell(withIdentifier: Constants.cellId)!
@@ -117,10 +125,12 @@ private extension LaunchListViewController {
             }
         )
         
+        // Bind launches infomation to data source
         viewModel.launchesObservable
             .bind(to: tableView.rx.items(dataSource: dataSource))
             .disposed(by: bag)
         
+        // Subscribe cell selected action
         tableView.rx
             .modelSelected(Launch.self)
             .map{ $0.flightNumber }
@@ -137,6 +147,7 @@ private extension LaunchListViewController {
                 }
             }).disposed(by: bag)
         
+        // Subscribe item accessory button tapped action
         tableView.rx
             .itemAccessoryButtonTapped
             .subscribe(onNext: { [weak self] indexPath in
@@ -154,6 +165,7 @@ private extension LaunchListViewController {
             })
             .disposed(by: bag)
         
+        // Subscribe the error BehaviorRelay
         viewModel.notifyError
             .asDriver()
             .drive(onNext: { [weak self] error in
@@ -172,8 +184,9 @@ private extension LaunchListViewController {
     }
 }
 
-// MARK: - Sort/filter popup
+// MARK: - Actions
 extension LaunchListViewController {
+    /// Show sort options alert
     @objc private func sortAlert() {
         let alert = UIAlertController(title: "Sort.Alert.Title".localized, message: "Sort.Alert.Message".localized, preferredStyle: .actionSheet)
         
@@ -198,6 +211,7 @@ extension LaunchListViewController {
         self.present(alert, animated: true, completion: nil)
     }
     
+    /// Show filter options alert
     @objc private func filterAlert() {
         let alert = UIAlertController(title: "Filter.Alert.Title".localized, message: "Filter.Alert.Message".localized, preferredStyle: .actionSheet)
         
@@ -222,6 +236,7 @@ extension LaunchListViewController {
         self.present(alert, animated: true, completion: nil)
     }
     
+    /// Reset launch list table view
     @objc private func resetLaunches() {
         viewModel.resetLaunches()
     }

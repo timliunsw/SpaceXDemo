@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// The model for launch.
 struct Launch {
     var flightNumber: Int
     var missionName: String
