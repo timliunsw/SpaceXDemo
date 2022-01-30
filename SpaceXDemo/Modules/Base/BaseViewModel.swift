@@ -14,6 +14,7 @@ import RxCocoa
  It is configured with shared variables and business logical functions.
  */
 class BaseViewModel: DisposeBagManagedObserver, LoadingStatusEmitable {
+    
     /// A boolean value type BehaviorRelay is used to be subscribed the loading status.
     /// It is `false` by default.
     let isLoading: BehaviorRelay<Bool> = BehaviorRelay(value: false)

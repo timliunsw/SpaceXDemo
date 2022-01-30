@@ -26,10 +26,11 @@
 		0D0F88AD26F25F60003E6320 /* DetailsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D0F88AC26F25F60003E6320 /* DetailsViewModel.swift */; };
 		0D2F888B27A11ABD000BDE32 /* ViewProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D2F888A27A11ABD000BDE32 /* ViewProtocols.swift */; };
 		0D2F888D27A16E87000BDE32 /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D2F888C27A16E87000BDE32 /* BaseViewController.swift */; };
-		0D2F888F27A173FE000BDE32 /* API.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D2F888E27A173FD000BDE32 /* API.swift */; };
+		0D2F888F27A173FE000BDE32 /* APIServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D2F888E27A173FD000BDE32 /* APIServiceProtocol.swift */; };
 		0D2F889127A1823B000BDE32 /* BaseViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D2F889027A1823B000BDE32 /* BaseViewModel.swift */; };
 		0D2F889727A20981000BDE32 /* LaunchListViewModelProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D2F889627A20981000BDE32 /* LaunchListViewModelProtocol.swift */; };
 		0D2F889927A20B59000BDE32 /* DetailsViewModelProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D2F889827A20B59000BDE32 /* DetailsViewModelProtocol.swift */; };
+		0D2F88B627A632C1000BDE32 /* APIRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D2F88B527A632C0000BDE32 /* APIRouter.swift */; };
 		0DC14D0F27427BE700607722 /* UIViewController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DC14D0E27427BE700607722 /* UIViewController+Extension.swift */; };
 		0DC14D122742815D00607722 /* NetworkError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DC14D112742815D00607722 /* NetworkError.swift */; };
 		0DC14D1B27429C6900607722 /* Launch.json in Resources */ = {isa = PBXBuildFile; fileRef = 0DC14D1827429C6800607722 /* Launch.json */; };
@@ -91,10 +92,11 @@
 		0D0F88AC26F25F60003E6320 /* DetailsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailsViewModel.swift; sourceTree = "<group>"; };
 		0D2F888A27A11ABD000BDE32 /* ViewProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewProtocols.swift; sourceTree = "<group>"; };
 		0D2F888C27A16E87000BDE32 /* BaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseViewController.swift; sourceTree = "<group>"; };
-		0D2F888E27A173FD000BDE32 /* API.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = API.swift; sourceTree = "<group>"; };
+		0D2F888E27A173FD000BDE32 /* APIServiceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIServiceProtocol.swift; sourceTree = "<group>"; };
 		0D2F889027A1823B000BDE32 /* BaseViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseViewModel.swift; sourceTree = "<group>"; };
 		0D2F889627A20981000BDE32 /* LaunchListViewModelProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchListViewModelProtocol.swift; sourceTree = "<group>"; };
 		0D2F889827A20B59000BDE32 /* DetailsViewModelProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailsViewModelProtocol.swift; sourceTree = "<group>"; };
+		0D2F88B527A632C0000BDE32 /* APIRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIRouter.swift; sourceTree = "<group>"; };
 		0DC14D0E27427BE700607722 /* UIViewController+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+Extension.swift"; sourceTree = "<group>"; };
 		0DC14D112742815D00607722 /* NetworkError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkError.swift; sourceTree = "<group>"; };
 		0DC14D1827429C6800607722 /* Launch.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Launch.json; sourceTree = "<group>"; };
@@ -267,8 +269,8 @@
 			isa = PBXGroup;
 			children = (
 				0D0F885E26F20F70003E6320 /* LaunchListViewController.swift */,
-				0D0F889E26F21FA5003E6320 /* LaunchListViewModel.swift */,
 				0D2F889627A20981000BDE32 /* LaunchListViewModelProtocol.swift */,
+				0D0F889E26F21FA5003E6320 /* LaunchListViewModel.swift */,
 			);
 			path = LaunchList;
 			sourceTree = "<group>";
@@ -277,8 +279,8 @@
 			isa = PBXGroup;
 			children = (
 				0D0F88AA26F25E9F003E6320 /* DetailsViewController.swift */,
-				0D0F88AC26F25F60003E6320 /* DetailsViewModel.swift */,
 				0D2F889827A20B59000BDE32 /* DetailsViewModelProtocol.swift */,
+				0D0F88AC26F25F60003E6320 /* DetailsViewModel.swift */,
 			);
 			path = Details;
 			sourceTree = "<group>";
@@ -296,7 +298,8 @@
 		0DC14D102742813D00607722 /* Networking */ = {
 			isa = PBXGroup;
 			children = (
-				0D2F888E27A173FD000BDE32 /* API.swift */,
+				0D2F88B527A632C0000BDE32 /* APIRouter.swift */,
+				0D2F888E27A173FD000BDE32 /* APIServiceProtocol.swift */,
 				0D0F88A626F23C85003E6320 /* APIService.swift */,
 				0DC14D112742815D00607722 /* NetworkError.swift */,
 			);
@@ -629,6 +632,7 @@
 				0D2F889727A20981000BDE32 /* LaunchListViewModelProtocol.swift in Sources */,
 				0D0F889B26F21EB9003E6320 /* String+Extension.swift in Sources */,
 				0DC14D0F27427BE700607722 /* UIViewController+Extension.swift in Sources */,
+				0D2F88B627A632C1000BDE32 /* APIRouter.swift in Sources */,
 				0D0F88AD26F25F60003E6320 /* DetailsViewModel.swift in Sources */,
 				0D0F88A526F23A46003E6320 /* Link.swift in Sources */,
 				0D2F888D27A16E87000BDE32 /* BaseViewController.swift in Sources */,
@@ -641,7 +645,7 @@
 				0D2F889127A1823B000BDE32 /* BaseViewModel.swift in Sources */,
 				0D0F889F26F21FA5003E6320 /* LaunchListViewModel.swift in Sources */,
 				0D2F888B27A11ABD000BDE32 /* ViewProtocols.swift in Sources */,
-				0D2F888F27A173FE000BDE32 /* API.swift in Sources */,
+				0D2F888F27A173FE000BDE32 /* APIServiceProtocol.swift in Sources */,
 				0D0F88AB26F25E9F003E6320 /* DetailsViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

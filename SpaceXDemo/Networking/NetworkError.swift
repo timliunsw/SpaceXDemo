@@ -15,6 +15,7 @@ enum NetworkError: Error {
 }
 
 extension NetworkError {
+    
     /// Retrieve the localized description for errors.
     var localizedDescription: String {
         switch self {

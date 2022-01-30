@@ -11,16 +11,17 @@ import RxDataSources
 import SafariServices
 
 class LaunchListViewController: BaseViewController {
+    
     /// Wrapper for data source of launch section
     typealias DataSource = RxTableViewSectionedReloadDataSource<LaunchSection>
     
     let tableView: UITableView = {
         let tableView = UITableView()
         tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: Constants.cellId)
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: Constants.LaunchListTableView.cellId)
         tableView.rowHeight = UITableView.automaticDimension
         tableView.backgroundColor = .secondarySystemBackground
-        tableView.accessibilityIdentifier = Constants.accessibilityIdentifier
+        tableView.accessibilityIdentifier = Constants.LaunchListTableView.accessibilityIdentifier
         
         return tableView
     }()
@@ -54,6 +55,7 @@ class LaunchListViewController: BaseViewController {
 
 // MARK: - Layout
 private extension LaunchListViewController {
+    
     func setupView() {
         view.backgroundColor = .systemBackground
         
@@ -86,6 +88,7 @@ extension LaunchListViewController: LoadingStatusObserver {
 
 // MARK: - Reactive
 private extension LaunchListViewController {
+    
     func bindViews() {
         bindLoadingStatus()
         
@@ -108,7 +111,7 @@ private extension LaunchListViewController {
         // Bind data source to table view
         let dataSource = DataSource(
             configureCell: { (_, tableView, indexPath, model) in
-                let cell = tableView.dequeueReusableCell(withIdentifier: Constants.cellId)!
+                let cell = tableView.dequeueReusableCell(withIdentifier: Constants.LaunchListTableView.cellId)!
                 cell.selectionStyle = .none
                 cell.accessoryType = .detailButton
                 cell.textLabel?.text = "No.\(model.flightNumber), \(model.missionName) (\(model.launchYear))"
@@ -186,6 +189,7 @@ private extension LaunchListViewController {
 
 // MARK: - Actions
 extension LaunchListViewController {
+    
     /// Show sort options alert
     @objc private func sortAlert() {
         let alert = UIAlertController(title: "Sort.Alert.Title".localized, message: "Sort.Alert.Message".localized, preferredStyle: .actionSheet)

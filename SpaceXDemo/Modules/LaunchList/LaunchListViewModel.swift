@@ -33,6 +33,7 @@ class LaunchListViewModel: BaseViewModel, LaunchListViewModelProtocol {
 
 // MARK: - Reactive
 private extension LaunchListViewModel {
+    
     func setupReactive() {
         launches.asObservable()
             .subscribe(onNext: { [weak self] launches in
@@ -55,6 +56,7 @@ private extension LaunchListViewModel {
 
 // MARK: - Handle data
 extension LaunchListViewModel {
+    
     func fetchLaunches(completion: (() -> Void)? = nil) {
         isLoading.accept(true)
         apiService.fetchLaunches() { [weak self] result in

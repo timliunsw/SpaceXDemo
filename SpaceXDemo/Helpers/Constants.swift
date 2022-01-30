@@ -8,13 +8,10 @@
 import UIKit
 
 enum Constants {
-    static let baseURL = "https://api.spacexdata.com/v3"
-    
-    enum SpaceXEndpoints {
-        static let launches = "launches/"
-        static let rockets = "rockets/"
+     
+    /// Constants for launch list table view
+    enum LaunchListTableView {
+        static let cellId = "CellIdentifier"
+        static let accessibilityIdentifier = "Launches Table View"
     }
-    
-    static let cellId = "CellIdentifier"
-    static let accessibilityIdentifier = "Launches Table View"
 }

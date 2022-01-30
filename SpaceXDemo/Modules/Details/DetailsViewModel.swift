@@ -38,6 +38,7 @@ class DetailsViewModel: BaseViewModel, DetailsViewModelProtocol {
 
 // MARK: - Reactive
 private extension DetailsViewModel {
+    
     func setupReactive() {
         Observable.combineLatest(launch.asObservable(),
                                  rocket.asObservable())
@@ -62,6 +63,7 @@ private extension DetailsViewModel {
 
 // MARK: - Handle data
 extension DetailsViewModel {
+    
     func fetchDetails() {
         isLoading.accept(true)
         apiService.fetchLaunch(withFlightNumber: flightNumber) { [weak self] result in

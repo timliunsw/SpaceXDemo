@@ -8,6 +8,7 @@
 import Foundation
 
 extension String {
+    
     /// A localized representation of `self`.
     var localized: String {
         return NSLocalizedString(self, comment: "")

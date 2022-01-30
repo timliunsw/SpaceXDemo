@@ -31,6 +31,7 @@ class BaseViewController: UIViewController, DisposeBagManagedObserver {
 
 // MARK: - ActivityIndicatable
 extension BaseViewController: ActivityIndicatable {
+    
     /// Add activity indicator to view
     func setupActivityIndicator() {
         view.addSubview(activityIndicator)

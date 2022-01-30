@@ -11,6 +11,7 @@ import Foundation
  A  manager used for handling API service.
  */
 struct APIService {
+    
     /// Represents a shared manager used for API service.
     /// Use this instance for handling API calls.
     static let shared = APIService()
@@ -19,19 +20,57 @@ struct APIService {
     /// Provides an API for downloading data from and uploading data to endpoints indicated by URLs.
     private var session: URLSession
     
-    /// The base URL.
-    let baseUrlString: String
-    
     /**
      `APIService` initialization.
      
      - parameter session: A URL session for  coordinating a group of related, network data transfer tasks.
      It is `the shared singleton session object` by default.
-     - parameter baseUrl: The base URL for API request. It is `Constants.baseURL` by default.
      */
-    init(session: URLSession = .shared, baseUrl: String = Constants.baseURL) {
+    init(session: URLSession = .shared) {
         self.session = session
-        self.baseUrlString = baseUrl
+    }
+    
+    /**
+     Create URLComponents based on the API router with specified route.
+     
+     - parameter router: An API router with specified route.
+     
+     - Returns: A `URLComponents` instance.
+     */
+    private func createComponents(router: APIRouter) -> URLComponents {
+        var components = URLComponents()
+        components.scheme = router.scheme
+        components.host = router.host
+        components.path = router.path
+        components.queryItems = router.queryItems
+        return components
+    }
+    
+    /**
+     Create URLRequest based on the API router with specified route.
+     
+     - parameter router: An API router with specified route.
+     
+     - Returns: A `URLRequest` instance. The return may be `NULL`.
+     */
+    private func createURLRequest(router: APIRouter) -> URLRequest? {
+        let components = createComponents(router: router)
+        guard let url = components.url else {
+            return nil
+        }
+        
+        var urlRequest = URLRequest(url: url)
+        urlRequest.httpMethod = router.method.rawValue
+        if let headers = router.headers {
+            for item in headers {
+                urlRequest.setValue(item.value, forHTTPHeaderField: item.key)
+            }
+        }
+        
+        if let httpBody = router.httpBody {
+            urlRequest.httpBody = httpBody
+        }
+        return urlRequest
     }
     
     /**
@@ -39,6 +78,7 @@ struct APIService {
      
      - parameter request: The request sent or to be sent to the server.
      - parameter completion: A block that's called after requested data is retireved.
+     
      - Returns: A `URLSessionTask` instance.
      */
     @discardableResult
@@ -68,7 +108,9 @@ struct APIService {
      - parameter request: The request sent or to be sent to the server.
      - parameter completion: A block that's called after requested data is retireved.
      Data is decoded with the specified type from a JSON object.
+     
      - Returns: A `URLSessionTask` instance.
+     
      - SeeAlso: `perform(_ request: URLRequest, completion: @escaping (Result<Data, Error>) -> Void) -> URLSessionTask`
      */
     @discardableResult
@@ -92,17 +134,14 @@ struct APIService {
 
 // MARK: APIServiceProtocol
 extension APIService: APIServiceProtocol {
+    
     func fetchLaunches(completion: @escaping LaunchesDataTaskResult) {
-        guard
-            let baseURL = URL(string: baseUrlString),
-            let urlComponents = NSURLComponents(url: baseURL.appendingPathComponent(Constants.SpaceXEndpoints.launches), resolvingAgainstBaseURL: true),
-            let url = urlComponents.url
-        else {
+        let router: APIRouter = .fetchLaunches
+        guard let request = createURLRequest(router: router) else {
             completion(.failure(.badURL))
             return
         }
         
-        let request = URLRequest(url: url)
         performJSON(request, of: [Launch].self) { result in
             switch result {
                 case .success(let data):
@@ -114,16 +153,12 @@ extension APIService: APIServiceProtocol {
     }
     
     func fetchLaunch(withFlightNumber number: Int, completion: @escaping LaunchDataTaskResult) {
-        guard
-            let baseURL = URL(string: baseUrlString),
-            let urlComponents = NSURLComponents(url: baseURL.appendingPathComponent("\(Constants.SpaceXEndpoints.launches)\(number)"), resolvingAgainstBaseURL: true),
-            let url = urlComponents.url
-        else {
+        let router: APIRouter = .fetchLaunch(fightNumber: number)
+        guard let request = createURLRequest(router: router) else {
             completion(.failure(.badURL))
             return
         }
         
-        let request = URLRequest(url: url)
         performJSON(request, of: Launch.self) { result in
             switch result {
                 case .success(let data):
@@ -135,16 +170,12 @@ extension APIService: APIServiceProtocol {
     }
 
     func fetchRocket(withRocketId id: String, completion: @escaping RocketDataTaskResult) {
-        guard
-            let baseURL = URL(string: baseUrlString),
-            let urlComponents = NSURLComponents(url: baseURL.appendingPathComponent("\(Constants.SpaceXEndpoints.rockets)\(id)"), resolvingAgainstBaseURL: true),
-            let url = urlComponents.url
-        else {
+        let router: APIRouter = .fetchRocket(id: id)
+        guard let request = createURLRequest(router: router) else {
             completion(.failure(.badURL))
             return
         }
         
-        let request = URLRequest(url: url)
         performJSON(request, of: Rocket.self) { result in
             switch result {
                 case .success(let data):

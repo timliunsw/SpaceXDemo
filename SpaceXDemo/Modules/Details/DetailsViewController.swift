@@ -10,6 +10,8 @@ import RxSwift
 import RxCocoa
 
 class DetailsViewController: BaseViewController {
+    
+    // Stack view for launch infomation and rocket infomation
     private let detailsStackView: UIStackView = {
         let stackView = UIStackView()
         stackView.translatesAutoresizingMaskIntoConstraints = false
@@ -80,6 +82,7 @@ extension DetailsViewController: LoadingStatusObserver {
 
 // MARK: - Layout
 private extension DetailsViewController {
+    
     func setupView() {
         navigationItem.title = "Nav.Title.Details".localized
         view.backgroundColor = #colorLiteral(red: 0.4666666687, green: 0.7647058964, blue: 0.2666666806, alpha: 1)
@@ -101,6 +104,7 @@ private extension DetailsViewController {
 
 // MARK: - Reactive
 private extension DetailsViewController {
+    
     func bindViews() {
         bindLoadingStatus()
         

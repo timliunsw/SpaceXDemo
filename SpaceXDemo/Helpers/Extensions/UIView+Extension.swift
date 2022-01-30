@@ -8,8 +8,9 @@
 import UIKit
 
 extension UIView {
+    
     /**
-     Activate top, left, bottom and right constaints to superview .
+     Activate top, left, bottom and right constaints to superview.
      
      - parameter top: top constraint to superview. It is `0` by default.
      - parameter left: left constraint to superview. It is `0` by default.
